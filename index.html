@@ -12,10 +12,10 @@
 </body>
 
 <script>
+var myTodo = document.getElementById('myTodo')
+var newTodo = document.getElementById('newTodo');
 var todos = [];
 
-
-var myTodo = document.getElementById('myTodo')
 function render(todos){
     var data = todos.map((item, index) => {
         return `<li>${item.content} <button data-id="${index}">Delete</button></li>`
@@ -23,16 +23,34 @@ function render(todos){
     myTodo.innerHTML = data.join('');
 }
 
-render(todos);
-
-var newTodo = document.getElementById('newTodo');
+//get data
+axios.get('http://localhost:3000/todos')
+  .then(function (response) {
+    // handle success
+    var todos = response.data;
+    render(todos);
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
 
 //Add new todo
 newTodo.addEventListener('change', event => {
-    todos.push({content: event.target.value});
+    axios.post('http://localhost:3000/todos', {
+        content: event.target.value
+    })
+    .then(function (response) {
+        console.log(response.data);
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
     render(todos);
     event.target.value = '';
 })
+
+
 //Delete
 myTodo.addEventListener('click', event => {
     var button = event.target;
@@ -40,5 +58,8 @@ myTodo.addEventListener('click', event => {
     todos.splice(id,1);
     render(todos);
 })
+
+
 </script>
 </html>
+
