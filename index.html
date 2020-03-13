@@ -15,47 +15,39 @@
 var myTodo = document.getElementById('myTodo')
 var newTodo = document.getElementById('newTodo');
 var todos = [];
+var url = 'https://my-json-server.typicode.com/malburo/myDatabase/todos';
 
 function render(todos){
     var data = todos.map((item, index) => {
-        return `<li>${item.content} <button data-id="${index}">Delete</button></li>`
+        return `<li>${item.content} <button data-id="${item.id}">Delete</button></li>`
     })
     myTodo.innerHTML = data.join('');
 }
 
 //get data
-axios.get('http://localhost:3000/todos')
-  .then(function (response) {
-    // handle success
-    var todos = response.data;
+async function getData(){
+    let getData = await axios.get(url);
+    todos = getData.data;
     render(todos);
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
+}
+getData();
 
 //Add new todo
 newTodo.addEventListener('change', event => {
-    axios.post('http://localhost:3000/todos', {
-        content: event.target.value
-    })
-    .then(function (response) {
-        console.log(response.data);
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
-    render(todos);
+    var content = {content: event.target.value, id: todos.length};
+    axios.post(url, content)
+    todos.push(content);
     event.target.value = '';
+    render(todos);
 })
 
-
-//Delete
+//Delete todo
 myTodo.addEventListener('click', event => {
     var button = event.target;
     var id = parseInt(button.dataset.id);
-    todos.splice(id,1);
+    axios.delete(`${url}/${id}`);
+    var index = todos.findIndex(item => item.id === id);
+    todos.splice(index,1);
     render(todos);
 })
 
