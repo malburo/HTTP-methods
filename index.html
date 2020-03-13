@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Storage</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <input type="text" id="newTodo">
+  <button id="addBtn">Add</button>
+  <ul id="myTodo"></ul>
+</body>
+
+<script>
+var todos = [];
+
+
+var myTodo = document.getElementById('myTodo')
+function render(todos){
+    var data = todos.map((item, index) => {
+        return `<li>${item.content} <button data-id="${index}">Delete</button></li>`
+    })
+    myTodo.innerHTML = data.join('');
+}
+
+render(todos);
+
+var newTodo = document.getElementById('newTodo');
+
+//Add new todo
+newTodo.addEventListener('change', event => {
+    todos.push({content: event.target.value});
+    render(todos);
+    event.target.value = '';
+})
+//Delete
+myTodo.addEventListener('click', event => {
+    var button = event.target;
+    var id = parseInt(button.dataset.id);
+    todos.splice(id,1);
+    render(todos);
+})
+</script>
+</html>
